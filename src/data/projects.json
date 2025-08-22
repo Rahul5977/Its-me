@@ -1,0 +1,75 @@
+{
+  "featured": [
+    {
+      "id": 1,
+      "title": "AI-Powered Code Assistant",
+      "description": "An intelligent code completion and debugging tool powered by GPT-4, helping developers write better code faster.",
+      "image": "/api/placeholder/600/400",
+      "technologies": ["React", "Node.js", "OpenAI API", "TypeScript", "MongoDB"],
+      "category": "AI/ML",
+      "status": "Live",
+      "links": {
+        "live": "https://codeassistant.dev",
+        "github": "https://github.com/alexjohnson/ai-code-assistant"
+      },
+      "featured": true
+    },
+    {
+      "id": 2,
+      "title": "Real-time Analytics Dashboard",
+      "description": "A comprehensive analytics platform with real-time data visualization, user behavior tracking, and predictive analytics.",
+      "image": "/api/placeholder/600/400",
+      "technologies": ["React", "D3.js", "Python", "FastAPI", "PostgreSQL", "Redis"],
+      "category": "Full Stack",
+      "status": "Live",
+      "links": {
+        "live": "https://analytics-pro.com",
+        "github": "https://github.com/alexjohnson/analytics-dashboard"
+      },
+      "featured": true
+    },
+    {
+      "id": 3,
+      "title": "Smart Expense Tracker",
+      "description": "Mobile-first expense tracking app with AI-powered categorization and spending insights.",
+      "image": "/api/placeholder/600/400",
+      "technologies": ["React Native", "Node.js", "TensorFlow", "MongoDB", "AWS"],
+      "category": "Mobile",
+      "status": "In Development",
+      "links": {
+        "github": "https://github.com/alexjohnson/expense-tracker"
+      },
+      "featured": true
+    }
+  ],
+  "all": [
+    {
+      "id": 4,
+      "title": "E-commerce Platform",
+      "description": "Full-featured e-commerce solution with payment integration and inventory management.",
+      "image": "/api/placeholder/600/400",
+      "technologies": ["Next.js", "Stripe", "PostgreSQL", "Prisma"],
+      "category": "Full Stack",
+      "status": "Live",
+      "links": {
+        "live": "https://shopease.com",
+        "github": "https://github.com/alexjohnson/ecommerce"
+      },
+      "featured": false
+    },
+    {
+      "id": 5,
+      "title": "Task Management Tool",
+      "description": "Collaborative project management tool with real-time updates and team collaboration features.",
+      "image": "/api/placeholder/600/400",
+      "technologies": ["Vue.js", "Express.js", "Socket.io", "MySQL"],
+      "category": "Web App",
+      "status": "Live",
+      "links": {
+        "live": "https://taskflow.app",
+        "github": "https://github.com/alexjohnson/taskflow"
+      },
+      "featured": false
+    }
+  ]
+}

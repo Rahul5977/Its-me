@@ -1,0 +1,96 @@
+{
+  "experience": [
+    {
+      "id": 1,
+      "title": "Senior Full Stack Engineer",
+      "company": "TechFlow Solutions",
+      "location": "San Francisco, CA",
+      "duration": "2022 - Present",
+      "type": "Full-time",
+      "description": "Lead a team of 5 developers in building scalable web applications. Implemented AI-powered features that increased user engagement by 40%.",
+      "achievements": [
+        "Architected and developed a microservices-based platform serving 100K+ users",
+        "Implemented CI/CD pipelines reducing deployment time by 60%",
+        "Mentored junior developers and conducted technical interviews"
+      ],
+      "technologies": ["React", "Node.js", "Python", "AWS", "Docker", "PostgreSQL"]
+    },
+    {
+      "id": 2,
+      "title": "AI Engineer",
+      "company": "DataMind AI",
+      "location": "Remote",
+      "duration": "2021 - 2022",
+      "type": "Full-time",
+      "description": "Developed machine learning models for natural language processing and computer vision applications.",
+      "achievements": [
+        "Built recommendation systems improving user retention by 35%",
+        "Optimized ML models reducing inference time by 50%",
+        "Published research paper on transformer architectures"
+      ],
+      "technologies": ["Python", "TensorFlow", "PyTorch", "AWS SageMaker", "MLflow"]
+    },
+    {
+      "id": 3,
+      "title": "Full Stack Developer",
+      "company": "StartupX",
+      "location": "Austin, TX",
+      "duration": "2020 - 2021",
+      "type": "Full-time",
+      "description": "Built the core platform from ground up, implementing both frontend and backend systems.",
+      "achievements": [
+        "Developed MVP that secured $2M Series A funding",
+        "Implemented real-time features using WebSocket technology",
+        "Designed and built RESTful APIs serving mobile and web clients"
+      ],
+      "technologies": ["React", "Express.js", "MongoDB", "Socket.io", "Heroku"]
+    },
+    {
+      "id": 4,
+      "title": "Frontend Developer",
+      "company": "WebCraft Agency",
+      "location": "Los Angeles, CA",
+      "duration": "2019 - 2020",
+      "type": "Full-time",
+      "description": "Created responsive web applications for various clients across different industries.",
+      "achievements": [
+        "Delivered 15+ client projects with 100% on-time completion rate",
+        "Improved website performance by 40% through optimization",
+        "Collaborated with design team to implement pixel-perfect UIs"
+      ],
+      "technologies": ["HTML/CSS", "JavaScript", "React", "Vue.js", "SASS"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Computer Science",
+      "school": "Stanford University",
+      "location": "Stanford, CA",
+      "duration": "2017 - 2019",
+      "gpa": "3.8/4.0",
+      "focus": "Artificial Intelligence and Machine Learning"
+    },
+    {
+      "degree": "Bachelor of Science in Software Engineering",
+      "school": "UC Berkeley",
+      "location": "Berkeley, CA",
+      "duration": "2013 - 2017",
+      "gpa": "3.7/4.0",
+      "focus": "Software Development and Algorithms"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Solutions Architect",
+      "issuer": "Amazon Web Services",
+      "date": "2022",
+      "credentialId": "AWS-SAA-123456"
+    },
+    {
+      "name": "Google Cloud Professional ML Engineer",
+      "issuer": "Google Cloud",
+      "date": "2021",
+      "credentialId": "GCP-MLE-789012"
+    }
+  ]
+}

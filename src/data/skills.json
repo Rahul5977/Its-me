@@ -1,0 +1,52 @@
+{
+  "categories": [
+    {
+      "name": "Frontend Development",
+      "icon": "Code",
+      "skills": [
+        { "name": "React", "level": 95, "icon": "⚛️" },
+        { "name": "TypeScript", "level": 90, "icon": "📘" },
+        { "name": "Next.js", "level": 85, "icon": "▲" },
+        { "name": "Vue.js", "level": 80, "icon": "💚" },
+        { "name": "Tailwind CSS", "level": 90, "icon": "🎨" },
+        { "name": "HTML/CSS", "level": 95, "icon": "🌐" }
+      ]
+    },
+    {
+      "name": "Backend Development",
+      "icon": "Server",
+      "skills": [
+        { "name": "Node.js", "level": 90, "icon": "🟢" },
+        { "name": "Python", "level": 85, "icon": "🐍" },
+        { "name": "Express.js", "level": 85, "icon": "🚀" },
+        { "name": "Django", "level": 80, "icon": "🎯" },
+        { "name": "PostgreSQL", "level": 85, "icon": "🐘" },
+        { "name": "MongoDB", "level": 80, "icon": "🍃" }
+      ]
+    },
+    {
+      "name": "AI & Machine Learning",
+      "icon": "Brain",
+      "skills": [
+        { "name": "TensorFlow", "level": 85, "icon": "🧠" },
+        { "name": "PyTorch", "level": 80, "icon": "🔥" },
+        { "name": "OpenAI API", "level": 90, "icon": "🤖" },
+        { "name": "Scikit-learn", "level": 85, "icon": "📊" },
+        { "name": "Pandas", "level": 90, "icon": "🐼" },
+        { "name": "NumPy", "level": 85, "icon": "🔢" }
+      ]
+    },
+    {
+      "name": "DevOps & Tools",
+      "icon": "Settings",
+      "skills": [
+        { "name": "Docker", "level": 85, "icon": "🐳" },
+        { "name": "AWS", "level": 80, "icon": "☁️" },
+        { "name": "Git", "level": 95, "icon": "📝" },
+        { "name": "CI/CD", "level": 80, "icon": "🔄" },
+        { "name": "Kubernetes", "level": 75, "icon": "⚙️" },
+        { "name": "Terraform", "level": 70, "icon": "🏗️" }
+      ]
+    }
+  ]
+}
