@@ -4,6 +4,7 @@ import { Command, Menu, Volume2, VolumeX, X } from "lucide-react";
 import { scrollToId } from "@/components/fx/primitives";
 import { sound, useSoundEnabled } from "@/lib/sound";
 import { cn } from "@/lib/utils";
+import { Logo } from "./Logo";
 
 // `pill: false` keeps a section out of the desktop pill bar (still in the mobile menu and ⌘K).
 export const SECTIONS = [
@@ -94,9 +95,7 @@ export function Nav({ onOpenPalette }: { onOpenPalette: () => void }) {
           )}
         >
           <button onClick={() => go("home")} className="group flex items-center gap-2 pl-2 font-mono text-sm">
-            <span className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary font-bold text-primary-foreground">
-              R
-            </span>
+            <Logo className="h-8 w-8 transition-transform duration-500 group-hover:rotate-[360deg] group-hover:drop-shadow-[0_0_10px_hsl(var(--primary)/0.7)]" />
             <span className="hidden text-muted-foreground transition group-hover:text-foreground sm:inline">
               rahul<span className="text-primary">.</span>dev
             </span>

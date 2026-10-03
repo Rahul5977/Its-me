@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
 import { sound } from "@/lib/sound";
+import { Logo } from "@/components/portfolio/Logo";
 
 /* ───────── custom cursor ───────── */
 
@@ -8,29 +9,50 @@ export function Cursor() {
   const dot = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const fine = window.matchMedia("(pointer: fine)").matches;
-    if (!fine) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
     setEnabled(true);
-    document.body.classList.add("has-custom-cursor");
 
-    let x = window.innerWidth / 2,
-      y = window.innerHeight / 2,
-      rx = x,
-      ry = y,
-      raf = 0;
+    let x = 0,
+      y = 0,
+      rx = 0,
+      ry = 0,
+      raf = 0,
+      seen = false;
     let hovering = false,
       down = false;
 
+    // The native cursor stays until we know where the pointer is, so it never "disappears" on load.
+    const show = () => {
+      setVisible(true);
+      document.body.classList.add("has-custom-cursor");
+    };
+    const hide = () => {
+      setVisible(false);
+      document.body.classList.remove("has-custom-cursor");
+    };
+
     const move = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
       x = e.clientX;
       y = e.clientY;
+      if (!seen) {
+        seen = true;
+        rx = x;
+        ry = y;
+        show();
+      }
       const t = e.target as HTMLElement;
-      hovering = !!t.closest("a, button, [role='button'], input, textarea, [data-cursor]");
+      hovering = !!t.closest?.("a, button, [role='button'], input, textarea, [data-cursor]");
     };
     const pd = () => (down = true);
     const pu = () => (down = false);
+    const leave = () => {
+      seen = false;
+      hide();
+    };
     const loop = () => {
       rx += (x - rx) * 0.18;
       ry += (y - ry) * 0.18;
@@ -46,25 +68,30 @@ export function Cursor() {
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerdown", pd);
     window.addEventListener("pointerup", pu);
+    document.documentElement.addEventListener("mouseleave", leave);
+    window.addEventListener("blur", leave);
     raf = requestAnimationFrame(loop);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerdown", pd);
       window.removeEventListener("pointerup", pu);
+      document.documentElement.removeEventListener("mouseleave", leave);
+      window.removeEventListener("blur", leave);
       document.body.classList.remove("has-custom-cursor");
     };
   }, []);
 
   if (!enabled) return null;
+  // z-[9999]: above the boot screen, ⌘K dialog and photo lightbox.
   return (
-    <>
+    <div className={`transition-opacity duration-200 ${visible ? "opacity-100" : "opacity-0"}`} aria-hidden>
       <div
         ref={ring}
-        className="pointer-events-none fixed left-0 top-0 z-[100] h-9 w-9 rounded-full border transition-[background-color,border-color] duration-200"
+        className="pointer-events-none fixed left-0 top-0 z-[9999] h-9 w-9 rounded-full border transition-[background-color,border-color] duration-200"
       />
-      <div ref={dot} className="pointer-events-none fixed left-0 top-0 z-[100] h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary))]" />
-    </>
+      <div ref={dot} className="pointer-events-none fixed left-0 top-0 z-[9999] h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary))]" />
+    </div>
   );
 }
 
@@ -270,6 +297,9 @@ export function BootLoader({ onDone }: { onDone: () => void }) {
         >
           <div className="scanlines pointer-events-none absolute inset-0 opacity-40" />
           <div className="w-full max-w-xl font-mono text-xs sm:text-sm">
+            <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200, damping: 14 }} className="mb-8">
+              <Logo className="h-14 w-14 drop-shadow-[0_0_24px_hsl(var(--primary)/0.5)]" />
+            </motion.div>
             <div className="mb-6 flex items-center gap-3 text-muted-foreground">
               <span className="h-2 w-2 animate-pulse rounded-full bg-accent" />
               rahul@portfolio:~$ ./boot --env=production
