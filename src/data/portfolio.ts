@@ -10,7 +10,7 @@ export const profile = {
   email: "rahul.raj9237@gmail.com",
   avatar: "https://avatars.githubusercontent.com/u/138022836?v=4",
   tagline: "I turn rough ideas into production-grade products.",
-  bio: "I build AI systems that behave like real software: agents with guardrails, RAG that grades its own evidence, and backends that survive a 100× traffic spike. I spent summer 2026 as an AI Intern at SuperLiving, I competed for IIT Bhilai at Inter IIT Tech Meet 14.0, I maintain projects at OpenLake (IIT Bhilai's open-source club), and I'm now shipping MiniClaw as my final-year project.",
+  bio: "I build AI systems that behave like real software: agents with guardrails, RAG that grades its own evidence, and backends that survive a 100× traffic spike. I spent summer 2026 as an AI Intern at SuperLiving, I competed for IIT Bhilai at Inter IIT Tech Meet 14.0, I maintain projects at OpenLake (IIT Bhilai's open-source club), and I'm now building MiniClaw, a security-first local AI agent.",
   philosophy: "ship real products, not toy demos",
   roles: [
     "AI/ML + Full-Stack Engineer",
@@ -67,7 +67,7 @@ export const featuredProjects: Project[] = [
   {
     id: "miniclaw",
     name: "MiniClaw",
-    kicker: "Final-year project · security-first personal AI agent",
+    kicker: "Security-first personal AI agent",
     description:
       "A minimal, self-hosted AI agent that runs fully on your machine with local models via Ollama. It reads and writes files, runs shell commands and fetches the web, but only inside a sandboxed workspace, with explainable approvals and an undo button.",
     highlights: [
