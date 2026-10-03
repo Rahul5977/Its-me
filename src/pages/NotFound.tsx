@@ -1,23 +1,21 @@
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { NeuralBackground } from "@/components/fx/ambient";
+import { asset } from "@/lib/utils";
 
 const NotFound = () => {
   const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
+    <div className="relative flex min-h-screen items-center justify-center px-4">
+      <NeuralBackground />
+      <div className="text-center font-mono">
+        <h1 className="glitch font-display text-[8rem] font-bold leading-none text-gradient" data-text="404">
+          404
+        </h1>
+        <p className="mt-4 text-muted-foreground">
+          <span className="text-destructive">error:</span> route <span className="text-foreground">{location.pathname}</span> not found
+        </p>
+        <a href={asset("")} className="mt-8 inline-block rounded-full border border-primary/50 px-6 py-2.5 text-sm text-primary transition hover:bg-primary hover:text-primary-foreground">
+          cd ~
         </a>
       </div>
     </div>
