@@ -25,3 +25,7 @@ dist-ssr
 
 .env
 .env.local
+
+# Resumes contain personal contact details; keep them out of the public repo
+/Rahul_Raj_Resume_*.pdf
+/resume/
