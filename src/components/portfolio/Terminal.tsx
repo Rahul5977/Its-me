@@ -19,6 +19,7 @@ const HELP: [string, string][] = [
   ["vision", "why I'm building ForTheStudents"],
   ["socials", "find me online"],
   ["contact", "jump to the mail form"],
+  ["guestbook", "sign my guestbook"],
   ["sudo hire-rahul", "you know you want to"],
   ["clear", "clear the screen"],
 ];
@@ -190,6 +191,10 @@ export function Terminal() {
             blog → <A href={profile.socials.hashnode}>{profile.socials.hashnode}</A>
           </span>,
         );
+        break;
+      case "guestbook":
+        push(<span className="text-accent">opening the guestbook… ✍</span>);
+        setTimeout(() => document.querySelector(".giscus")?.scrollIntoView({ behavior: "smooth", block: "center" }), 400);
         break;
       case "contact":
       case "mail":

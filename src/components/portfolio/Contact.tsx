@@ -6,6 +6,7 @@ import { Magnetic, Reveal, SectionHeading } from "@/components/fx/primitives";
 import { profile } from "@/data/portfolio";
 import { sound } from "@/lib/sound";
 import { cn } from "@/lib/utils";
+import { Guestbook } from "./Guestbook";
 
 const TOPICS = ["Hiring / internship", "Collaboration", "Freelance project", "Just saying hi 👋"];
 
@@ -305,6 +306,8 @@ export function Contact() {
             </form>
           </Reveal>
         </div>
+
+        <Guestbook />
       </div>
     </section>
   );

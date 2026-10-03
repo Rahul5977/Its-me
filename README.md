@@ -40,3 +40,10 @@ src/
   components/portfolio/      page sections (Hero, About, Work, Journey, Stack, Terminal, Contact…)
   pages/Index.tsx            page assembly + global UI sounds
 ```
+
+## Visitors & guestbook
+
+- **Analytics:** [GoatCounter](https://www.goatcounter.com) (cookie-free). Set the repo variable once:
+  `gh variable set GOATCOUNTER_CODE --body <your-code>` and push / re-run the deploy. Stats live at `https://<your-code>.goatcounter.com`.
+- **Guestbook:** [giscus](https://giscus.app) over this repo's Discussions ("Guestbook" thread in *General*).
+  Requires the giscus GitHub App installed on this repo.

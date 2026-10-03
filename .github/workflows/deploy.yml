@@ -29,6 +29,8 @@ jobs:
           # Repo variable, e.g. its-me.kodexa.in. Empty → served at /<repo>/ on github.io.
           CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+          # Repo variable with your GoatCounter code (e.g. rahulraj). Empty → analytics off.
+          VITE_GOATCOUNTER: ${{ vars.GOATCOUNTER_CODE }}
         run: |
           if [ -n "$CUSTOM_DOMAIN" ]; then BASE="/"; else BASE="/${{ github.event.repository.name }}/"; fi
           npx vite build --base="$BASE"
