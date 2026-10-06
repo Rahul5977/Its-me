@@ -149,7 +149,7 @@ function CounselorVisual() {
   ] as const;
   const color = { Safe: "bg-accent text-accent", Target: "bg-primary text-primary", Reach: "bg-secondary text-secondary" };
   return (
-    <Frame title="counsellor.kodexa.in/predict">
+    <Frame title="main.d32971gyq5jq34.amplifyapp.com/predict">
       <div className="mb-3 flex items-center gap-2">
         <span className="text-muted-foreground">rank ›</span>
         <AnimatePresence mode="wait">

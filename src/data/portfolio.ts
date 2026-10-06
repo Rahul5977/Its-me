@@ -171,7 +171,7 @@ export const featuredProjects: Project[] = [
       { value: "<50ms", label: "p95 cache hit" },
       { value: "100×", label: "spike-ready" },
     ],
-    links: { github: "https://github.com/Rahul5977/EngHub", live: "https://counsellor.kodexa.in/" },
+    links: { github: "https://github.com/Rahul5977/EngHub", live: "https://main.d32971gyq5jq34.amplifyapp.com/" },
   },
 ];
 
@@ -430,7 +430,7 @@ export const interIIT = {
 /** ForTheStudents (EngHub): the vision behind the JoSAA counselling platform. */
 export const forTheStudents = {
   name: "ForTheStudents",
-  live: "https://counsellor.kodexa.in/",
+  live: "https://main.d32971gyq5jq34.amplifyapp.com/",
   github: "https://github.com/Rahul5977/EngHub",
   mission: "No student should lose a seat they earned because of a badly ordered list.",
   story:
