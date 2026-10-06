@@ -10,7 +10,7 @@ export const profile = {
   email: "rahul.raj9237@gmail.com",
   avatar: "https://avatars.githubusercontent.com/u/138022836?v=4",
   tagline: "I turn rough ideas into production-grade products.",
-  bio: "I build AI systems that behave like real software: agents with guardrails, RAG that grades its own evidence, and backends that survive a 100× traffic spike. I spent summer 2026 as an AI Intern at SuperLiving, I competed for IIT Bhilai at Inter IIT Tech Meet 14.0, I maintain projects at OpenLake (IIT Bhilai's open-source club), and I'm now building MiniClaw, a security-first local AI agent.",
+  bio: "I build AI systems that behave like real software: agents with guardrails, RAG that grades its own evidence, and backends that survive a 100× traffic spike. I spent summer 2026 as an AI Intern at SuperLiving, I competed for IIT Bhilai at Inter IIT Tech Meet 14.0, I maintain projects at OpenLake (IIT Bhilai's open-source club), and I recently shipped MiniClaw v1.0, a security-first local AI agent.",
   philosophy: "ship real products, not toy demos",
   roles: [
     "AI/ML + Full-Stack Engineer",
@@ -50,7 +50,15 @@ export interface Project {
   /** HSL triplet used for the card glow. */
   glow: string;
   metrics?: { value: string; label: string }[];
-  links: { github?: string; live?: string; note?: string };
+  links: {
+    github?: string;
+    live?: string;
+    /** Link to a demo video, shown as a "Demo" button. */
+    demo?: string;
+    /** Embeddable player URL for the demo video, shown on featured cards. */
+    demoEmbed?: string;
+    note?: string;
+  };
 }
 
 export const nowBuilding = {
@@ -67,26 +75,31 @@ export const featuredProjects: Project[] = [
   {
     id: "miniclaw",
     name: "MiniClaw",
-    kicker: "Security-first personal AI agent",
+    kicker: "Security-first personal AI agent · v1.0.0",
     description:
-      "A minimal, self-hosted AI agent that runs fully on your machine with local models via Ollama. It reads and writes files, runs shell commands and fetches the web, but only inside a sandboxed workspace, with explainable approvals and an undo button.",
+      "A minimal, self-hosted AI agent that runs fully on your machine with local models via Ollama. It reads and writes files, runs shell commands and fetches the web, but only inside a sandboxed workspace. Every tool call goes through one security pipeline (risk rules, skill permissions, taint tracking, a panic guard) before it runs, with explainable approvals and an undo button.",
     highlights: [
-      "Agent loop with plan preview, per-step risk scoring and diff-based approvals",
-      "/undo for every file change, plus a /panic emergency stop",
-      "Memory inbox: the agent can only propose memories and warns on prompt injection",
-      "Skills with permission manifests, and a Telegram + WhatsApp gateway with reminders",
+      "Agent loop with plan preview, per-step risk scoring, diff-based approvals and /undo via git checkpoints",
+      "Taint tracking: text copied from web pages or files can't trigger a tool without approval, cutting executed prompt-injection attacks from 18/20 to 3/20 (0/20 live on qwen2.5:7b)",
+      "Memory inbox: the agent can only propose memories, and proposals made after reading untrusted content get flagged",
+      "Skills with permission manifests, a /panic switch, and a Telegram + WhatsApp gateway with HMAC-verified webhooks, reminders and a daily briefing",
+      "Web dashboard with a flight recorder that replays every run step by step",
     ],
     stack: ["TypeScript", "Bun", "Ollama", "SQLite", "Telegram API", "WhatsApp Cloud API"],
     category: "AI Agents",
-    status: "Building",
+    status: "Shipped",
     year: "2026",
     glow: "14 90% 60%",
     metrics: [
-      { value: "5/8", label: "phases shipped" },
+      { value: "0/20", label: "live injections run" },
+      { value: "97%", label: "test coverage" },
       { value: "100%", label: "local inference" },
-      { value: "9", label: "safety features" },
     ],
-    links: { github: "https://github.com/Rahul5977/MiniClaw" },
+    links: {
+      github: "https://github.com/Rahul5977/MiniClaw",
+      demo: "https://drive.google.com/file/d/1Oo_YEj168SYAs1OZHzAvTRAdBoq4NTOx/view",
+      demoEmbed: "https://drive.google.com/file/d/1Oo_YEj168SYAs1OZHzAvTRAdBoq4NTOx/preview",
+    },
   },
   {
     id: "codearena",

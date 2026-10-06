@@ -119,7 +119,7 @@ export function Terminal() {
             <span className="text-amber-300">● building {nowBuilding.name}</span>: {nowBuilding.kicker}
           </span>,
           <span className="text-muted-foreground">{nowBuilding.pipeline.join("  →  ")}</span>,
-          <span className="text-muted-foreground">also: MiniClaw (phase 6: web dashboard + flight recorder)</span>,
+          <span className="text-muted-foreground">also: MiniClaw v1.0.0 shipped (taint tracking, flight recorder, 97% coverage)</span>,
         );
         break;
       case "skills":

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView, useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight, Github, Lock, Radio } from "lucide-react";
+import { ArrowUpRight, Github, Lock, Play, Radio } from "lucide-react";
 import { Reveal, ScrambleText, SectionHeading, useSpotlight } from "@/components/fx/primitives";
 import { featuredProjects, moreProjects, nowBuilding, type Project, type ProjectCategory } from "@/data/portfolio";
 import { sound } from "@/lib/sound";
@@ -33,6 +33,11 @@ function ProjectLinks({ p, size = "md" }: { p: Project; size?: "sm" | "md" }) {
       {p.links.live && (
         <a href={p.links.live} target="_blank" rel="noreferrer" className={cn(cls, size === "md" && "border-primary/50 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground")}>
           {p.links.live.includes("youtube") ? "Demo" : "Live"} <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      )}
+      {p.links.demo && (
+        <a href={p.links.demo} target="_blank" rel="noreferrer" className={cn(cls, size === "md" && "border-primary/50 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground")}>
+          <Play className="h-3.5 w-3.5" /> Demo
         </a>
       )}
       {p.links.github && (
@@ -134,6 +139,20 @@ function NowBuilding() {
 
 /* ───────── featured: sticky stacked cards ───────── */
 
+function DemoVideo({ src, title }: { src: string; title: string }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-white/5 bg-background/70">
+      <div className="flex items-center gap-1.5 border-b border-white/5 px-3 py-2">
+        <Play className="h-3 w-3 text-primary" />
+        <span className="ml-1 font-mono text-[10px] text-muted-foreground">{title}</span>
+      </div>
+      <div className="relative aspect-video">
+        <iframe src={src} title={title} allow="autoplay; fullscreen" allowFullScreen loading="lazy" className="absolute inset-0 h-full w-full" />
+      </div>
+    </div>
+  );
+}
+
 function FeaturedCard({ p, i, total }: { p: Project; i: number; total: number }) {
   const wrap = useRef<HTMLDivElement>(null);
   const spot = useSpotlight<HTMLDivElement>();
@@ -187,7 +206,7 @@ function FeaturedCard({ p, i, total }: { p: Project; i: number; total: number })
           </div>
 
           <div className="flex flex-col gap-4">
-            {Visual && <Visual />}
+            {p.links.demoEmbed ? <DemoVideo src={p.links.demoEmbed} title={`${p.name} demo`} /> : Visual && <Visual />}
             {p.metrics && (
               <div className="grid grid-cols-3 gap-3">
                 {p.metrics.map((m) => (
