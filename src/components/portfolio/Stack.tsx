@@ -52,7 +52,7 @@ export function Stack() {
     <section id="stack" className="relative py-28 md:py-36">
       <div className="container">
         <SectionHeading
-          index="07"
+          index="08"
           label="tech.stack"
           title={
             <>

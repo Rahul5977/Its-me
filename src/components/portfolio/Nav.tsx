@@ -14,6 +14,7 @@ export const SECTIONS = [
   { id: "students", label: "vision", pill: true },
   { id: "internship", label: "internship", pill: true },
   { id: "interiit", label: "inter iit", pill: true },
+  { id: "achievements", label: "achievements", pill: true },
   { id: "journey", label: "journey", pill: true },
   { id: "stack", label: "stack", pill: false },
   { id: "terminal", label: "terminal", pill: false },

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BootLoader, Cursor, NeuralBackground, ScrollProgress } from "@/components/fx/ambient";
 import { useSmoothScroll } from "@/components/fx/primitives";
 import { About } from "@/components/portfolio/About";
+import { Achievements } from "@/components/portfolio/Achievements";
 import { CommandPalette } from "@/components/portfolio/CommandPalette";
 import { Contact } from "@/components/portfolio/Contact";
 import { Footer } from "@/components/portfolio/Footer";
@@ -88,6 +89,7 @@ const Index = () => {
         <ForTheStudents />
         <Internship />
         <InterIIT />
+        <Achievements />
         <Journey />
         <Stack />
         <Terminal />

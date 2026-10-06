@@ -243,7 +243,7 @@ export function Terminal() {
     <section id="terminal" className="relative py-28 md:py-36">
       <div className="container">
         <SectionHeading
-          index="08"
+          index="09"
           label="interactive.shell"
           title={
             <>

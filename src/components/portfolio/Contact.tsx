@@ -133,7 +133,7 @@ export function Contact() {
     <section id="contact" className="relative py-28 md:py-36">
       <div className="container">
         <SectionHeading
-          index="09"
+          index="10"
           label="open.channel"
           title={
             <>

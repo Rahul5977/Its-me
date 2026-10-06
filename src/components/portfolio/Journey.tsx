@@ -177,7 +177,7 @@ export function Journey() {
     <section id="journey" className="relative py-28 md:py-36">
       <div className="container">
         <SectionHeading
-          index="06"
+          index="07"
           label="journey.log"
           title={
             <>

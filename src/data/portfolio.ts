@@ -527,6 +527,57 @@ export const achievements = [
   { title: "Inter IIT 14.0", detail: "HP3 (Pathway) + NP2 (Jilo Health)", icon: "medal" },
 ] as const;
 
+/** Achievements section: everything listed under "Achievements" on the resume. */
+export const honors = [
+  {
+    stat: "10th · 12th",
+    title: "Inter IIT Tech Meet 14.0",
+    detail: "10th in the No Prep and 12th in the High Prep problem statements, among 23 IITs, representing IIT Bhilai.",
+    tag: "national",
+    year: "2025",
+    icon: "medal",
+  },
+  {
+    stat: "2nd",
+    title: "Pathway LiveAI Hackathon",
+    detail: "2nd Prize at the hackathon run by the Data Science and AI Club, IIT Bhilai.",
+    tag: "hackathon",
+    icon: "trophy",
+  },
+  {
+    stat: "Winner",
+    title: "Code Crusade",
+    detail: "Won IIT Bhilai's intra-college competitive programming contest.",
+    tag: "competitive programming",
+    year: "2024",
+    icon: "code",
+  },
+  {
+    stat: "350+",
+    title: "LeetCode",
+    detail: "Problems solved across data structures, algorithms and contests.",
+    tag: "dsa",
+    icon: "chart",
+    href: "https://leetcode.com/u/Rahul_Raj_99/",
+  },
+  {
+    stat: "AIR 5977",
+    title: "JEE Advanced",
+    detail: "All India Rank 5977 in JEE Advanced 2023, in the top 3% of qualified candidates.",
+    tag: "entrance",
+    year: "2023",
+    icon: "target",
+  },
+  {
+    stat: "99.3",
+    title: "JEE Main",
+    detail: "99.3 percentile in JEE Main 2023.",
+    tag: "entrance",
+    year: "2023",
+    icon: "chart",
+  },
+] as const;
+
 export const skillGroups = [
   { name: "Languages", items: ["Python", "TypeScript", "JavaScript", "C++", "C", "SQL"] },
   { name: "Frontend", items: ["React 19", "Next.js", "TanStack Start", "Vite", "Tailwind", "Framer Motion"] },
