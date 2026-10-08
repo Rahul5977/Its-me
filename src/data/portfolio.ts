@@ -399,21 +399,20 @@ export const interIIT = {
     title: "Explainable multi-agent trading on a streaming engine",
     description:
       "A streaming-native trading assistant for retail investors. Market, news, social and filings feeds are fused in real time on Pathway. A PPO reinforcement-learning agent proposes allocations, then parallel “agentic cells” stress-test each pick in a three-round Bull vs. Bear debate before a validator agent signs off. Trades only go through when the RL signal and the agents agree, and an MCP server enforces exposure and risk limits.",
+    role: "I designed the high-velocity data pipeline underneath it. The RL allocator and the agent layer were built by my teammates.",
     flow: ["Pathway streams", "PPO allocator", "Bull vs Bear debate", "Validator", "MCP risk gate", "Execute"],
     highlights: [
-      "Redis Streams decouple ingestion from four specialist agents (market, news, social, SEC) that run as independent consumer groups",
-      "Online fine-tuning accepts a new model only if it beats the last one: 141 of 271 updates were accepted, with no degradation",
-      "Parallel agentic cells cut the end-to-end cycle from 615 s to 73 s for 10 tickers",
-      "Structured outputs, a validator agent and citation requirements guard against hallucination",
+      "Built the Pathway streaming layer that fuses market, news, social and SEC filing feeds in real time, sustaining 15K events/s",
+      "Decoupled ingestion from the agents with Redis Streams: four specialist agents (market, news, social, SEC) read as independent consumer groups, so slow agents never back-pressure ingest",
     ],
     metrics: [
       { value: "22.37%", label: "backtest return" },
       { value: "2.02", label: "Sharpe ratio" },
-      { value: "8.4×", label: "faster pipeline" },
+      { value: "4", label: "live feeds fused" },
       { value: "15K/s", label: "events ingested" },
     ],
-    stack: ["Pathway", "Redis Streams", "FinRL · PPO", "LLM agents", "MCP", "Alpaca", "Delta Lake", "Docker"],
-    note: "3-month backtest window, Aug to Nov 2025",
+    stack: ["Pathway", "Redis Streams", "LLM agents", "MCP", "Alpaca", "Delta Lake", "Docker"],
+    note: "Return and Sharpe are for the full team system, backtested Aug to Nov 2025",
   },
   np2: {
     code: "NP2",
@@ -478,8 +477,8 @@ export const experience = [
     period: "Dec 2025",
     type: "Competition",
     summary:
-      "Represented IIT Bhilai on two problem statements: AEGIS, an explainable multi-agent trading system built on Pathway streaming (HP3), and an AI eye-image screening MVP for early anemia detection (NP2).",
-    tags: ["Pathway", "Multi-agent", "RL (PPO)", "MCP", "Computer vision"],
+      "Represented IIT Bhilai on two problem statements: AEGIS, an explainable multi-agent trading system where I designed the high-velocity Pathway data pipeline (HP3), and an AI eye-image screening MVP for early anemia detection (NP2).",
+    tags: ["Pathway", "Redis Streams", "Streaming pipelines", "Computer vision"],
   },
   {
     role: "Maintainer & Contributor",

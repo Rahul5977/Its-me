@@ -122,6 +122,10 @@ export function InterIIT() {
                 <h3 className="font-display text-3xl font-bold tracking-tight md:text-5xl">{hp3.name}</h3>
                 <p className="mt-2 font-mono text-xs text-primary md:text-sm">{hp3.title}</p>
                 <p className="mt-5 leading-relaxed text-foreground/80">{hp3.description}</p>
+                <p className="mt-4 border-l-2 border-primary pl-3 text-sm leading-relaxed text-foreground/90">
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-primary">My role · </span>
+                  {hp3.role}
+                </p>
                 <div className="mt-6">
                   <FlowRail steps={hp3.flow} />
                 </div>
