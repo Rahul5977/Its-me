@@ -2,9 +2,8 @@
 title: "🌱 Getting comfortable with uncomfortable"
 date: 2026-10-12
 summary: "For everyone facing placement rejections, comparing themselves with friends, or wondering if they're on the right path. An honest note about uncertainty, self-worth, and beginning again."
-tags: ["placements-college-life,-personal-growth,-career,-life"]
+tags: ["placements-college-life", "personal-growth", "career", "life"]
 cover: "media/cover-from-comfort-zone-to-growth-xc6p.webp"
-mood: "☕"
 ---
 
 Growth begins where **comfort ends.** 🚀

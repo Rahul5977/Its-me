@@ -113,7 +113,7 @@ export default function BlogPost() {
             ))}
           </div>
           <h1 className="font-display text-4xl font-bold leading-[1.08] tracking-tight md:text-6xl">
-            {post.mood && <span className="mr-3 inline-block animate-float">{post.mood}</span>}
+            {post.mood && <span className="mr-3">{post.mood}</span>}
             {post.title}
           </h1>
           {post.summary && <p className="mt-6 text-lg leading-relaxed text-muted-foreground md:text-xl">{post.summary}</p>}

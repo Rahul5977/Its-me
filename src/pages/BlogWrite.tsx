@@ -72,7 +72,7 @@ const localToday = () => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 };
 const emptyDraft = (): Draft => ({
-  meta: { title: "", date: localToday(), summary: "", tags: [], mood: "☕" },
+  meta: { title: "", date: localToday(), summary: "", tags: [] },
   slug: "",
   slugTouched: false,
   body: "",
@@ -539,7 +539,7 @@ function Studio() {
     // A leading "# Title" duplicates the page title, so drop it.
     const cleaned = b.replace(/^\s*#\s+.+\n+/, "");
     const fileSlug = slugify(file.name.replace(/\.[^.]+$/, ""));
-    setDraft({ meta: { ...m, mood: m.mood ?? "📝" }, body: cleaned, slug: fileSlug, slugTouched: true, editing: null });
+    setDraft({ meta: m, body: cleaned, slug: fileSlug, slugTouched: true, editing: null });
     toast.success(`Imported ${file.name}`);
   };
 
@@ -635,9 +635,14 @@ function Studio() {
   const words = useMemo(() => body.split(/\s+/).filter(Boolean).length, [body]);
   const coverSrc = meta.cover ? resolve(meta.cover) : "";
 
+  // "ai, rag, daily life" → three tags; spaces inside a tag become dashes.
   const addTag = (t: string) => {
-    const tag = t.trim().toLowerCase().replace(/^#/, "").replace(/\s+/g, "-");
-    if (tag && !meta.tags.includes(tag)) setMeta({ tags: [...meta.tags, tag] });
+    const next = [...meta.tags];
+    for (const part of t.split(/[,\n]/)) {
+      const tag = part.trim().toLowerCase().replace(/^#/, "").replace(/\s+/g, "-");
+      if (tag && !next.includes(tag)) next.push(tag);
+    }
+    if (next.length !== meta.tags.length) setMeta({ tags: next });
     setTagInput("");
   };
 
@@ -756,12 +761,12 @@ function Studio() {
             <Field label="date">
               <input type="date" value={meta.date} onChange={(e) => setMeta({ date: e.target.value })} className={cn(inputCls, "[color-scheme:dark]")} />
             </Field>
-            <Field label="mood">
+            <Field label="mood" hint={meta.mood ? <button type="button" onClick={() => setMeta({ mood: undefined })} className="hover:text-destructive">clear</button> : undefined}>
               <EmojiPopover
                 onPick={(e) => setMeta({ mood: e })}
                 trigger={
                   <button type="button" className="flex h-[38px] w-14 items-center justify-center rounded-xl border border-white/10 bg-background/60 text-xl transition hover:border-primary">
-                    {meta.mood || "🙂"}
+                    {meta.mood || <Smile className="h-4 w-4 text-muted-foreground" />}
                   </button>
                 }
               />
@@ -780,7 +785,15 @@ function Studio() {
               ))}
               <input
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
+                onChange={(e) => {
+                  // Typing or pasting a comma commits everything before it as tags.
+                  const v = e.target.value;
+                  if (v.includes(",")) {
+                    const cut = v.lastIndexOf(",");
+                    addTag(v.slice(0, cut));
+                    setTagInput(v.slice(cut + 1).trimStart());
+                  } else setTagInput(v);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === ",") {
                     e.preventDefault();
