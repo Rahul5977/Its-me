@@ -59,7 +59,8 @@ async function gh<T>(s: GithubSettings, path: string, init?: RequestInit): Promi
 
 export async function verifyGithub(s: GithubSettings): Promise<string> {
   const r = await gh<{ full_name: string; permissions?: { push?: boolean } }>(s, "");
-  if (r.permissions && !r.permissions.push) throw new Error("token can read but not push to this repo");
+  // Strict: a token without confirmed push access (or an anonymous read) must not pass.
+  if (!r.permissions?.push) throw new Error("this token can't push to the repo");
   return r.full_name;
 }
 

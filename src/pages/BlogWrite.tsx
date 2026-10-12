@@ -21,6 +21,7 @@ import {
   ImagePlus,
   Italic,
   KeyRound,
+  Lock,
   Link2,
   List,
   ListOrdered,
@@ -351,6 +352,11 @@ function PublishDialog({
                           const cleared = { ...gh, token: "" };
                           setGh(cleared);
                           saveGithubSettings(cleared);
+                          try {
+                            sessionStorage.removeItem(UNLOCKED_KEY);
+                          } catch {
+                            /* ignore */
+                          }
                         }}
                         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-xs text-muted-foreground transition hover:text-destructive"
                       >
@@ -388,10 +394,134 @@ function PublishDialog({
   );
 }
 
-/* ───────── the studio ───────── */
 
+/* ───────── owner gate ───────── */
+
+const UNLOCKED_KEY = "rr-blog-unlocked";
+
+type GateState = "checking" | "locked" | "open";
+
+/**
+ * The studio is the owner's alone. Publishing was always guarded by GitHub (only a token with push
+ * access to the repo can commit), but visitors shouldn't even see the editor. It opens in `npm run dev`,
+ * or once a token in this browser is confirmed by GitHub to have push access.
+ */
 export default function BlogWrite() {
   usePageTitle("Studio · Rahul Raj");
+  const [state, setState] = useState<GateState>(() => {
+    if (import.meta.env.DEV) return "open";
+    if (!loadGithubSettings().token) return "locked";
+    try {
+      if (sessionStorage.getItem(UNLOCKED_KEY) === "1") return "open";
+    } catch {
+      /* ignore */
+    }
+    return "checking";
+  });
+  const [token, setToken] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  // Re-verify a stored token once per session: a revoked or expired token locks the studio again.
+  useEffect(() => {
+    if (state !== "checking") return;
+    verifyGithub(loadGithubSettings())
+      .then(() => {
+        try {
+          sessionStorage.setItem(UNLOCKED_KEY, "1");
+        } catch {
+          /* ignore */
+        }
+        setState("open");
+      })
+      .catch(() => setState("locked"));
+  }, [state]);
+
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => meta.remove();
+  }, []);
+
+  const unlock = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    const settings = { ...loadGithubSettings(), token: token.trim() };
+    try {
+      await verifyGithub(settings);
+      saveGithubSettings(settings);
+      try {
+        sessionStorage.setItem(UNLOCKED_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+      sound.play("success");
+      setState("open");
+    } catch {
+      sound.play("error");
+      toast.error("Not authorised", { description: "That token can't push to this repo." });
+    } finally {
+      setBusy(false);
+      setToken("");
+    }
+  };
+
+  if (state === "open") return <Studio />;
+
+  return (
+    <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
+      <div aria-hidden className="grid-bg pointer-events-none absolute inset-0 opacity-60" />
+      <div className="glass relative w-full max-w-md rounded-3xl p-8 text-center">
+        <Link to="/blog" className="mx-auto mb-6 block w-fit" aria-label="Back to blog">
+          <Logo className="h-12 w-12" />
+        </Link>
+        {state === "checking" ? (
+          <p className="flex items-center justify-center gap-2 font-mono text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" /> checking access…
+          </p>
+        ) : (
+          <>
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10">
+              <Lock className="h-5 w-5 text-primary" />
+            </div>
+            <h1 className="font-display text-2xl font-bold">This studio is private</h1>
+            <p className="mt-2 text-sm text-muted-foreground">It&apos;s where Rahul writes. The posts themselves are all on the blog.</p>
+            <Link
+              to="/blog"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:shadow-[0_0_24px_hsl(var(--primary)/0.5)]"
+            >
+              Read the blog
+            </Link>
+            <details className="mt-8 text-left">
+              <summary className="cursor-pointer text-center font-mono text-[11px] text-muted-foreground/70 transition hover:text-muted-foreground">owner sign-in</summary>
+              <form onSubmit={unlock} className="mt-4 space-y-3">
+                <input
+                  type="password"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  placeholder="GitHub token with push access"
+                  autoComplete="off"
+                  className={cn(inputCls, "font-mono")}
+                />
+                <button
+                  disabled={busy || !token.trim()}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-2 font-mono text-xs transition hover:border-primary hover:text-primary disabled:opacity-40"
+                >
+                  {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <KeyRound className="h-3.5 w-3.5" />} unlock
+                </button>
+              </form>
+            </details>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ───────── the studio (owner only) ───────── */
+
+function Studio() {
   const [draft, setDraft] = useState<Draft>(loadDraft);
   const [media, setMedia] = useState<Record<string, string>>({});
   const [view, setView] = useState<View>(() => (window.innerWidth >= 1024 ? "split" : "write"));
