@@ -29,8 +29,12 @@ and `/blog/<slug>` with giscus comments, plus an RSS feed at `/feed.xml`.
 **Writing studio: `/blog/write`.** Split editor with live preview, toolbar, emoji picker, animated stickers, GIFs,
 drag/drop/paste images (auto-compressed to WebP), `.md` import, and autosaved drafts.
 
-- **Publish from anywhere** (even your phone): *Publish* → paste a fine-grained GitHub token with
-  *Contents: read & write* on this repo (stored only in that browser). It makes one commit and the site redeploys in ~2 min.
+- **Publish from anywhere** (even your phone): open `/blog/write` → *owner sign-in* → paste a fine-grained GitHub token
+  (only this repo, *Contents: read & write*, short expiry) and choose a passphrase. The token is encrypted with the
+  passphrase (AES-256-GCM, PBKDF2) before it's stored, and only ever decrypted in that tab's memory; afterwards you
+  unlock with the passphrase. Publishing makes one commit and the site redeploys in ~2 min.
+- **Who can write:** only someone holding a token with push access to this repo. Visitors see a locked page, and GitHub
+  rejects commits from anyone else regardless. Lost a device? Revoke the token on GitHub.
 - **Locally:** `npm run dev` → `/blog/write` → *Save to disk* writes the files into the repo; commit & push as usual.
 - **By hand:** drop a `.md` file into `src/content/blog/`:
 

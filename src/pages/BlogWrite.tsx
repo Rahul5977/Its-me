@@ -5,7 +5,6 @@ import {
   Bold,
   CheckCircle2,
   CheckSquare,
-  ChevronDown,
   Code,
   Columns2,
   Download,
@@ -20,7 +19,6 @@ import {
   HelpCircle,
   ImagePlus,
   Italic,
-  KeyRound,
   Lock,
   Link2,
   List,
@@ -48,7 +46,8 @@ import { Markdown } from "@/components/blog/Markdown";
 import { usePageTitle } from "@/components/blog/BlogShell";
 import { EmojiPopover, GifPopover, StickerPopover } from "@/components/blog/StudioPickers";
 import { parseFrontmatter, readingMinutes, serializeFrontmatter, slugify, toMeta, type PostMeta } from "@/lib/blog/frontmatter";
-import { loadGithubSettings, publishCommit, saveGithubSettings, verifyGithub, type GithubSettings, type PublishFile } from "@/lib/blog/github";
+import { forgetVault, getSession, lockSession, publishCommit, type GithubSettings, type PublishFile } from "@/lib/blog/github";
+import { OwnerAccess } from "@/components/blog/OwnerAccess";
 import { blobToBase64, clearDraftMedia, compressImage, deleteDraftMedia, listDraftMedia, mediaName, putDraftMedia, referencedMedia } from "@/lib/blog/media";
 import { allTags, loadPostSource, posts, resolveMedia } from "@/lib/blog/posts";
 import { sound } from "@/lib/sound";
@@ -157,8 +156,7 @@ function PublishDialog({
   buildFiles: () => Promise<{ markdown: string; media: { name: string; base64: string }[] }>;
   onPublished: (slug: string) => void;
 }) {
-  const [gh, setGh] = useState<GithubSettings>(loadGithubSettings);
-  const [showToken, setShowToken] = useState(!gh.token);
+  const [gh, setGh] = useState<GithubSettings | null>(getSession);
   const [phase, setPhase] = useState<"idle" | "working" | "done">("idle");
   const [result, setResult] = useState<{ commit?: string; local?: string } | null>(null);
   const { slug, meta } = draft;
@@ -179,9 +177,9 @@ function PublishDialog({
   }, [open]);
 
   const publish = async () => {
+    if (!gh) return;
     setPhase("working");
     try {
-      saveGithubSettings(gh);
       const { markdown, media } = await buildFiles();
       const files: PublishFile[] = [
         { path: `src/content/blog/${slug}.md`, content: markdown, encoding: "utf-8" },
@@ -257,7 +255,7 @@ function PublishDialog({
                   <a href={result.commit} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs transition hover:border-primary hover:text-primary">
                     view commit
                   </a>
-                  <a href={`https://github.com/${gh.repo}/actions`} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs transition hover:border-primary hover:text-primary">
+                  <a href={`https://github.com/${gh?.repo}/actions`} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 px-4 py-2 font-mono text-xs transition hover:border-primary hover:text-primary">
                     watch deploy
                   </a>
                 </>
@@ -294,84 +292,34 @@ function PublishDialog({
             )}
 
             <div className="space-y-3 rounded-2xl border border-white/10 p-4">
-              <button onClick={() => setShowToken((s) => !s)} className="flex w-full items-center justify-between text-sm font-semibold">
+              <div className="flex items-center justify-between gap-2 text-sm font-semibold">
                 <span className="inline-flex items-center gap-2">
-                  <Github className="h-4 w-4" /> GitHub {gh.token ? <span className="font-mono text-[11px] font-normal text-accent">connected · {gh.repo}</span> : <span className="font-mono text-[11px] font-normal text-muted-foreground">not connected</span>}
+                  <Github className="h-4 w-4" /> GitHub{" "}
+                  {gh ? (
+                    <span className="font-mono text-[11px] font-normal text-accent">unlocked · {gh.repo}</span>
+                  ) : (
+                    <span className="font-mono text-[11px] font-normal text-muted-foreground">locked</span>
+                  )}
                 </span>
-                <ChevronDown className={cn("h-4 w-4 transition", showToken && "rotate-180")} />
-              </button>
-              {showToken && (
-                <div className="space-y-3">
-                  <Field
-                    label="access token"
-                    hint={
-                      <a
-                        href="https://github.com/settings/personal-access-tokens/new"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        create one ↗
-                      </a>
-                    }
+                {gh && (
+                  <button
+                    onClick={() => {
+                      forgetVault();
+                      setGh(null);
+                    }}
+                    className="inline-flex items-center gap-1.5 font-mono text-[11px] font-normal text-muted-foreground transition hover:text-destructive"
                   >
-                    <input type="password" value={gh.token} onChange={(e) => setGh({ ...gh, token: e.target.value.trim() })} placeholder="github_pat_…" className={cn(inputCls, "font-mono")} />
-                  </Field>
-                  <div className="grid grid-cols-[1fr_100px] gap-2">
-                    <Field label="repo">
-                      <input value={gh.repo} onChange={(e) => setGh({ ...gh, repo: e.target.value.trim() })} className={cn(inputCls, "font-mono")} />
-                    </Field>
-                    <Field label="branch">
-                      <input value={gh.branch} onChange={(e) => setGh({ ...gh, branch: e.target.value.trim() })} className={cn(inputCls, "font-mono")} />
-                    </Field>
-                  </div>
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    Fine-grained token → <span className="text-foreground">Only select repositories: {gh.repo.split("/")[1] || "your repo"}</span> → Permissions →{" "}
-                    <span className="text-foreground">Contents: Read and write</span>. It&apos;s stored only in this browser.
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={async () => {
-                        try {
-                          const name = await verifyGithub(gh);
-                          saveGithubSettings(gh);
-                          toast.success("Token works", { description: `can push to ${name}` });
-                          setShowToken(false);
-                        } catch (e) {
-                          toast.error("Token check failed", { description: (e as Error).message });
-                        }
-                      }}
-                      disabled={!gh.token}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 font-mono text-xs transition hover:border-primary hover:text-primary disabled:opacity-40"
-                    >
-                      <KeyRound className="h-3.5 w-3.5" /> verify &amp; save
-                    </button>
-                    {gh.token && (
-                      <button
-                        onClick={() => {
-                          const cleared = { ...gh, token: "" };
-                          setGh(cleared);
-                          saveGithubSettings(cleared);
-                          try {
-                            sessionStorage.removeItem(UNLOCKED_KEY);
-                          } catch {
-                            /* ignore */
-                          }
-                        }}
-                        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-xs text-muted-foreground transition hover:text-destructive"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" /> forget token
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
+                    <Trash2 className="h-3.5 w-3.5" /> remove token
+                  </button>
+                )}
+              </div>
+              {!gh && <OwnerAccess onReady={setGh} />}
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
               <button
                 onClick={publish}
-                disabled={phase === "working" || !gh.token || blocking.length > 0}
+                disabled={phase === "working" || !gh || blocking.length > 0}
                 className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground transition hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)] disabled:opacity-40 disabled:hover:shadow-none"
               >
                 {phase === "working" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4" />}
@@ -397,44 +345,14 @@ function PublishDialog({
 
 /* ───────── owner gate ───────── */
 
-const UNLOCKED_KEY = "rr-blog-unlocked";
-
-type GateState = "checking" | "locked" | "open";
-
 /**
  * The studio is the owner's alone. Publishing was always guarded by GitHub (only a token with push
  * access to the repo can commit), but visitors shouldn't even see the editor. It opens in `npm run dev`,
- * or once a token in this browser is confirmed by GitHub to have push access.
+ * or once you unlock the encrypted token with your passphrase (re-checked against GitHub every time).
  */
 export default function BlogWrite() {
   usePageTitle("Studio · Rahul Raj");
-  const [state, setState] = useState<GateState>(() => {
-    if (import.meta.env.DEV) return "open";
-    if (!loadGithubSettings().token) return "locked";
-    try {
-      if (sessionStorage.getItem(UNLOCKED_KEY) === "1") return "open";
-    } catch {
-      /* ignore */
-    }
-    return "checking";
-  });
-  const [token, setToken] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  // Re-verify a stored token once per session: a revoked or expired token locks the studio again.
-  useEffect(() => {
-    if (state !== "checking") return;
-    verifyGithub(loadGithubSettings())
-      .then(() => {
-        try {
-          sessionStorage.setItem(UNLOCKED_KEY, "1");
-        } catch {
-          /* ignore */
-        }
-        setState("open");
-      })
-      .catch(() => setState("locked"));
-  }, [state]);
+  const [unlocked, setUnlocked] = useState(() => import.meta.env.DEV || !!getSession());
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -444,30 +362,7 @@ export default function BlogWrite() {
     return () => meta.remove();
   }, []);
 
-  const unlock = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    const settings = { ...loadGithubSettings(), token: token.trim() };
-    try {
-      await verifyGithub(settings);
-      saveGithubSettings(settings);
-      try {
-        sessionStorage.setItem(UNLOCKED_KEY, "1");
-      } catch {
-        /* ignore */
-      }
-      sound.play("success");
-      setState("open");
-    } catch {
-      sound.play("error");
-      toast.error("Not authorised", { description: "That token can't push to this repo." });
-    } finally {
-      setBusy(false);
-      setToken("");
-    }
-  };
-
-  if (state === "open") return <Studio />;
+  if (unlocked) return <Studio />;
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-background px-4">
@@ -476,12 +371,7 @@ export default function BlogWrite() {
         <Link to="/blog" className="mx-auto mb-6 block w-fit" aria-label="Back to blog">
           <Logo className="h-12 w-12" />
         </Link>
-        {state === "checking" ? (
-          <p className="flex items-center justify-center gap-2 font-mono text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" /> checking access…
-          </p>
-        ) : (
-          <>
+        <>
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10">
               <Lock className="h-5 w-5 text-primary" />
             </div>
@@ -495,25 +385,11 @@ export default function BlogWrite() {
             </Link>
             <details className="mt-8 text-left">
               <summary className="cursor-pointer text-center font-mono text-[11px] text-muted-foreground/70 transition hover:text-muted-foreground">owner sign-in</summary>
-              <form onSubmit={unlock} className="mt-4 space-y-3">
-                <input
-                  type="password"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
-                  placeholder="GitHub token with push access"
-                  autoComplete="off"
-                  className={cn(inputCls, "font-mono")}
-                />
-                <button
-                  disabled={busy || !token.trim()}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-2 font-mono text-xs transition hover:border-primary hover:text-primary disabled:opacity-40"
-                >
-                  {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <KeyRound className="h-3.5 w-3.5" />} unlock
-                </button>
-              </form>
+              <div className="mt-4">
+                <OwnerAccess onReady={() => setUnlocked(true)} />
+              </div>
             </details>
-          </>
-        )}
+        </>
       </div>
     </div>
   );
@@ -818,6 +694,18 @@ function Studio() {
               </div>
             </PopoverContent>
           </Popover>
+          {!import.meta.env.DEV && (
+            <button
+              onClick={() => {
+                lockSession();
+                window.location.reload();
+              }}
+              title="Lock the studio (clears the token from memory)"
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-xs text-muted-foreground transition hover:text-foreground"
+            >
+              <Lock className="h-3.5 w-3.5" /> <span className="hidden sm:inline">lock</span>
+            </button>
+          )}
           <button onClick={download} title="Download .md" className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-xs text-muted-foreground transition hover:text-foreground">
             <Download className="h-3.5 w-3.5" /> <span className="hidden sm:inline">.md</span>
           </button>

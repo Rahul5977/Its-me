@@ -9,7 +9,7 @@ import { SoundToggle } from "@/components/portfolio/Nav";
 import { useGlobalUiSounds } from "@/hooks/use-ui-sounds";
 import { profile } from "@/data/portfolio";
 import { asset, cn } from "@/lib/utils";
-import { loadGithubSettings } from "@/lib/blog/github";
+import { hasVault } from "@/lib/blog/github";
 
 export function usePageTitle(title: string) {
   useEffect(() => {
@@ -36,8 +36,8 @@ function Aurora() {
 export function BlogShell({ children }: { children: ReactNode }) {
   useSmoothScroll();
   useGlobalUiSounds();
-  // The studio link only shows on devices you've published from (or in dev).
-  const canWrite = import.meta.env.DEV || !!loadGithubSettings().token;
+  // The studio link only shows on devices holding your encrypted token (or in dev).
+  const canWrite = import.meta.env.DEV || hasVault();
 
   useEffect(() => scrollToTop(), []);
 
@@ -70,11 +70,12 @@ export function BlogShell({ children }: { children: ReactNode }) {
               blog
             </NavLink>
             {canWrite && (
-              <NavLink to="/blog/write" className={link}>
+              // Full page load on purpose: the studio starts clean, without the analytics script (see main.tsx).
+              <a href={asset("blog/write")} className={link({ isActive: false })}>
                 <span className="inline-flex items-center gap-1">
                   <PenLine className="h-3 w-3" /> write
                 </span>
-              </NavLink>
+              </a>
             )}
           </div>
           <div className="flex items-center gap-2">

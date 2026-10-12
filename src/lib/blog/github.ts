@@ -7,21 +7,92 @@ export interface GithubSettings {
   branch: string;
 }
 
-const KEY = "rr-blog-github";
 export const DEFAULT_REPO = "Rahul5977/Its-me";
 
-export function loadGithubSettings(): GithubSettings {
+/* ───────── encrypted token vault ─────────
+ * The token is never stored readable. It's encrypted with AES-256-GCM under a key derived from your
+ * passphrase (PBKDF2-SHA256, 600k iterations); only the ciphertext lives in localStorage. The decrypted
+ * token exists solely in this module's memory and disappears when the tab closes or you lock the studio.
+ * localStorage on rahul5977.github.io is shared by every Pages site on that domain, so plaintext there
+ * would be readable by any of them.
+ */
+
+const VAULT_KEY = "rr-blog-vault";
+const LEGACY_KEY = "rr-blog-github";
+const ITERATIONS = 600_000;
+export const MIN_PASSPHRASE = 10;
+
+interface Vault {
+  v: 1;
+  repo: string;
+  branch: string;
+  salt: string;
+  iv: string;
+  data: string;
+}
+
+let session: GithubSettings | null = null;
+
+const b64 = (buf: ArrayBuffer | Uint8Array) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+
+// Older builds kept the token in plain text: delete it on sight.
+try {
+  localStorage.removeItem(LEGACY_KEY);
+} catch {
+  /* ignore */
+}
+
+function readVault(): Vault | null {
   try {
-    const s = JSON.parse(localStorage.getItem(KEY) ?? "{}");
-    return { token: s.token ?? "", repo: s.repo || DEFAULT_REPO, branch: s.branch || "main" };
+    const v = JSON.parse(localStorage.getItem(VAULT_KEY) ?? "null");
+    return v?.v === 1 ? v : null;
   } catch {
-    return { token: "", repo: DEFAULT_REPO, branch: "main" };
+    return null;
   }
 }
 
-export function saveGithubSettings(s: GithubSettings) {
+async function deriveKey(passphrase: string, salt: Uint8Array) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITERATIONS, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+
+export const hasVault = () => !!readVault();
+export const vaultRepo = () => readVault()?.repo ?? DEFAULT_REPO;
+/** The unlocked settings for this tab, or null when locked. */
+export const getSession = () => session;
+export const lockSession = () => {
+  session = null;
+};
+
+export async function saveVault(settings: GithubSettings, passphrase: string) {
+  if (passphrase.length < MIN_PASSPHRASE) throw new Error(`Passphrase must be at least ${MIN_PASSPHRASE} characters`);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(passphrase, salt);
+  const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(settings.token));
+  const vault: Vault = { v: 1, repo: settings.repo, branch: settings.branch, salt: b64(salt), iv: b64(iv), data: b64(data) };
+  localStorage.setItem(VAULT_KEY, JSON.stringify(vault));
+  session = settings;
+}
+
+export async function unlockVault(passphrase: string): Promise<GithubSettings> {
+  const v = readVault();
+  if (!v) throw new Error("No saved token on this device");
   try {
-    localStorage.setItem(KEY, JSON.stringify(s));
+    const key = await deriveKey(passphrase, unb64(v.salt));
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(v.iv) }, key, unb64(v.data));
+    session = { token: new TextDecoder().decode(plain), repo: v.repo, branch: v.branch };
+    return session;
+  } catch {
+    throw new Error("Wrong passphrase");
+  }
+}
+
+export function forgetVault() {
+  session = null;
+  try {
+    localStorage.removeItem(VAULT_KEY);
   } catch {
     /* ignore */
   }
