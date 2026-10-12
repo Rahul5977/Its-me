@@ -1,11 +1,30 @@
 // Blog plumbing for Vite:
 //  • `virtual:blog-index`: post metadata (no bodies) plus lazy loaders, so pages only download the post they show.
 //  • `feed.xml`: RSS feed emitted at build time.
+//  • Static HTML for /blog and each post (GitHub Pages serves them with 200 and per-post link previews).
 //  • `POST /__blog/save` (dev server only, localhost only): the /blog/write studio saves posts straight to disk.
 import fs from "node:fs";
 import path from "node:path";
 import type { Plugin, ResolvedConfig } from "vite";
 import { excerpt, parseFrontmatter, readingMinutes, toMeta } from "./src/lib/blog/frontmatter";
+
+const attr = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** Swap the page title and social-preview tags in the built index.html. */
+function withMeta(html: string, m: { title: string; description: string; url: string; image?: string; type?: string }) {
+  const set = (re: RegExp, tag: string) => (re.test(html) ? (html = html.replace(re, tag)) : (html = html.replace("</head>", `  ${tag}\n  </head>`)));
+  set(/<title>[\s\S]*?<\/title>/, `<title>${attr(m.title)}</title>`);
+  set(/<meta name="description"[^>]*>/, `<meta name="description" content="${attr(m.description)}" />`);
+  set(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${attr(m.title)}" />`);
+  set(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${attr(m.description)}" />`);
+  set(/<meta property="og:type"[^>]*>/, `<meta property="og:type" content="${m.type ?? "website"}" />`);
+  set(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${attr(m.url)}" />`);
+  if (m.image) {
+    set(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${attr(m.image)}" />`);
+    set(/<meta name="twitter:card"[^>]*>/, `<meta name="twitter:card" content="summary_large_image" />`);
+  }
+  return html;
+}
 
 const VIRTUAL = "virtual:blog-index";
 const RESOLVED = "\0" + VIRTUAL;
@@ -31,6 +50,8 @@ export function blog(): Plugin {
       .filter((p) => SLUG_RE.test(p.slug) && (includeDrafts || !p.draft))
       .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
   };
+
+  const siteUrl = () => (process.env.CUSTOM_DOMAIN ? `https://${process.env.CUSTOM_DOMAIN}/` : `https://rahul5977.github.io${config.base}`);
 
   return {
     name: "rr-blog",
@@ -101,8 +122,7 @@ export function blog(): Plugin {
       });
     },
     generateBundle() {
-      const domain = process.env.CUSTOM_DOMAIN;
-      const site = domain ? `https://${domain}/` : `https://rahul5977.github.io${config.base}`;
+      const site = siteUrl();
       const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       const items = readPosts(false)
         .slice(0, 30)
@@ -134,6 +154,26 @@ ${items}
 </rss>
 `,
       });
+    },
+    writeBundle(options) {
+      const out = options.dir ?? path.resolve(config.root, config.build.outDir);
+      const indexFile = path.join(out, "index.html");
+      if (!fs.existsSync(indexFile)) return;
+      const html = fs.readFileSync(indexFile, "utf8");
+      const site = siteUrl();
+      const write = (route: string, page: string) => {
+        fs.mkdirSync(path.join(out, route), { recursive: true });
+        fs.writeFileSync(path.join(out, route, "index.html"), page);
+      };
+      write("blog", withMeta(html, { title: "Blog · Rahul Raj", description: "Notes from the build log: days, debugging sessions and concepts that finally clicked.", url: `${site}blog` }));
+      write("blog/write", withMeta(html, { title: "Studio · Rahul Raj", description: "Writing studio.", url: `${site}blog/write` }));
+      for (const p of readPosts(false)) {
+        const cover = p.cover && (/^https?:/.test(p.cover) ? p.cover : p.cover.startsWith("media/") ? `${site}blog/${p.slug}/${p.cover.slice(6)}` : `${site}${p.cover.replace(/^\//, "")}`);
+        write(
+          `blog/${p.slug}`,
+          withMeta(html, { title: `${p.title} · Rahul Raj`, description: p.summary || excerpt(p.body), url: `${site}blog/${p.slug}`, image: cover, type: "article" }),
+        );
+      }
     },
   };
 }
