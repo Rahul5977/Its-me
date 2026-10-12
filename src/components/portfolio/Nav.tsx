@@ -18,6 +18,7 @@ export const SECTIONS = [
   { id: "journey", label: "journey", pill: true },
   { id: "stack", label: "stack", pill: false },
   { id: "terminal", label: "terminal", pill: false },
+  { id: "writing", label: "blog", pill: true },
   { id: "contact", label: "contact", pill: true },
 ];
 

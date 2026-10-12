@@ -34,6 +34,11 @@ export function scrollToId(id: string) {
   else el.scrollIntoView({ behavior: "smooth" });
 }
 
+export function scrollToTop() {
+  if (lenis) lenis.scrollTo(0, { immediate: true });
+  else window.scrollTo(0, 0);
+}
+
 /* ───────── text scramble / decrypt ───────── */
 
 const GLYPHS = "!<>-_\\/[]{}—=+*^?#01アイウエオカキクケコ";

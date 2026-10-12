@@ -10,39 +10,14 @@ import { ForTheStudents } from "@/components/portfolio/ForTheStudents";
 import { Hero } from "@/components/portfolio/Hero";
 import { InterIIT } from "@/components/portfolio/InterIIT";
 import { Internship } from "@/components/portfolio/Internship";
+import { LatestPostPopout } from "@/components/portfolio/LatestPostPopout";
 import { Journey } from "@/components/portfolio/Journey";
 import { Nav } from "@/components/portfolio/Nav";
 import { Stack } from "@/components/portfolio/Stack";
 import { Terminal } from "@/components/portfolio/Terminal";
 import { Work } from "@/components/portfolio/Work";
-import { sound } from "@/lib/sound";
-
-/** Play subtle UI sounds for every interactive element without wiring each one by hand. */
-function useGlobalUiSounds() {
-  useEffect(() => {
-    let last: Element | null = null;
-    const SEL = "a, button, [role='button'], [role='option']";
-    const over = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
-      const el = (e.target as Element).closest(SEL);
-      if (el && el !== last) sound.play("hover");
-      last = el;
-    };
-    const down = (e: PointerEvent) => {
-      sound.unlock();
-      if ((e.target as Element).closest(SEL)) sound.play("click");
-    };
-    const key = () => sound.unlock();
-    document.addEventListener("pointerover", over);
-    document.addEventListener("pointerdown", down);
-    document.addEventListener("keydown", key, { once: true });
-    return () => {
-      document.removeEventListener("pointerover", over);
-      document.removeEventListener("pointerdown", down);
-      document.removeEventListener("keydown", key);
-    };
-  }, []);
-}
+import { Writing } from "@/components/portfolio/Writing";
+import { useGlobalUiSounds } from "@/hooks/use-ui-sounds";
 
 const BOOTED_KEY = "rr-booted";
 
@@ -82,6 +57,7 @@ const Index = () => {
       <ScrollProgress />
       <Nav onOpenPalette={() => setPalette(true)} />
       <CommandPalette open={palette} setOpen={setPalette} />
+      <LatestPostPopout ready={booted} />
       <main>
         <Hero booted={booted} />
         <About />
@@ -93,6 +69,7 @@ const Index = () => {
         <Journey />
         <Stack />
         <Terminal />
+        <Writing />
         <Contact />
       </main>
       <Footer />

@@ -248,6 +248,51 @@
   96% { clip-path: inset(40% 0 35% 0); transform: translate(2px, 0); }
 }
 
+/* ───────── blog ───────── */
+
+/* highlight.js tokens, mapped to the site palette */
+.hljs-comment,
+.hljs-quote { color: hsl(215 14% 45%); font-style: italic; }
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-doctag { color: hsl(var(--secondary)); }
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute { color: hsl(var(--accent)); }
+.hljs-number,
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet { color: hsl(28 95% 65%); }
+.hljs-title,
+.hljs-title.function_,
+.hljs-section,
+.hljs-name { color: hsl(var(--primary)); }
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ { color: hsl(45 95% 65%); }
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params,
+.hljs-property,
+.hljs-attr { color: hsl(205 90% 75%); }
+.hljs-meta,
+.hljs-selector-id,
+.hljs-selector-class { color: hsl(330 80% 70%); }
+.hljs-deletion { color: hsl(var(--destructive)); }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
+
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+
+@keyframes sticker-pop {
+  0% { transform: scale(0.4) rotate(-12deg); opacity: 0; }
+  70% { transform: scale(1.08) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+.sticker { animation: sticker-pop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

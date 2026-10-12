@@ -29,6 +29,8 @@ jobs:
           # Repo variable, e.g. its-me.kodexa.in. Empty → served at /<repo>/ on github.io.
           CUSTOM_DOMAIN: ${{ vars.CUSTOM_DOMAIN }}
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+          # Optional repo variable: GIPHY key for GIF/sticker search in the blog studio.
+          VITE_GIPHY_KEY: ${{ vars.GIPHY_KEY }}
           # Repo variable with your GoatCounter code (e.g. rahulraj). Empty → analytics off.
           VITE_GOATCOUNTER: ${{ vars.GOATCOUNTER_CODE }}
         run: |

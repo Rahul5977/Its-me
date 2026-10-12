@@ -1,45 +1,8 @@
-import { useEffect, useRef } from "react";
 import { BookOpenText, Github } from "lucide-react";
 import { Reveal } from "@/components/fx/primitives";
-
-// giscus stores guestbook entries as one GitHub Discussion ("Guestbook") in this repo.
-// Visitors sign in with GitHub, so every entry carries a real name and avatar.
-const GISCUS = {
-  repo: "Rahul5977/Its-me",
-  repoId: "R_kgDOPikwFw",
-  category: "General",
-  categoryId: "DIC_kwDOPikwF84DG7v3",
-  term: "Guestbook",
-};
+import { GiscusThread } from "./Giscus";
 
 export function Guestbook() {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const host = ref.current;
-    if (!host || host.querySelector("script, iframe")) return;
-    const s = document.createElement("script");
-    s.src = "https://giscus.app/client.js";
-    s.async = true;
-    s.crossOrigin = "anonymous";
-    Object.entries({
-      "data-repo": GISCUS.repo,
-      "data-repo-id": GISCUS.repoId,
-      "data-category": GISCUS.category,
-      "data-category-id": GISCUS.categoryId,
-      "data-mapping": "specific",
-      "data-term": GISCUS.term,
-      "data-strict": "1",
-      "data-reactions-enabled": "1",
-      "data-emit-metadata": "0",
-      "data-input-position": "top",
-      "data-theme": "transparent_dark",
-      "data-lang": "en",
-      "data-loading": "lazy",
-    }).forEach(([k, v]) => s.setAttribute(k, v));
-    host.appendChild(s);
-  }, []);
-
   return (
     <Reveal className="mt-20">
       <div className="glass rounded-3xl p-6 md:p-10">
@@ -59,7 +22,7 @@ export function Guestbook() {
             <Github className="h-3.5 w-3.5" /> powered by GitHub Discussions
           </span>
         </div>
-        <div ref={ref} data-lenis-prevent className="giscus min-h-[220px]" />
+        <GiscusThread term="Guestbook" />
       </div>
     </Reveal>
   );

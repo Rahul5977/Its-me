@@ -21,6 +21,36 @@ All content lives in [`src/data/portfolio.ts`](src/data/portfolio.ts): profile, 
   activation email to the inbox, and you click it once. Alternatively set `VITE_WEB3FORMS_KEY` (repo secret for CI) to use Web3Forms.
   If delivery ever fails, the form opens the visitor's mail app pre-filled.
 
+## Blog
+
+Posts are Markdown files in [`src/content/blog/`](src/content/blog) (images in `public/blog/<slug>/`), rendered at `/blog`
+and `/blog/<slug>` with giscus comments, plus an RSS feed at `/feed.xml`.
+
+**Writing studio: `/blog/write`.** Split editor with live preview, toolbar, emoji picker, animated stickers, GIFs,
+drag/drop/paste images (auto-compressed to WebP), `.md` import, and autosaved drafts.
+
+- **Publish from anywhere** (even your phone): *Publish* → paste a fine-grained GitHub token with
+  *Contents: read & write* on this repo (stored only in that browser). It makes one commit and the site redeploys in ~2 min.
+- **Locally:** `npm run dev` → `/blog/write` → *Save to disk* writes the files into the repo; commit & push as usual.
+- **By hand:** drop a `.md` file into `src/content/blog/`:
+
+```md
+---
+title: "What I learned about vector DBs"
+date: 2026-10-12
+summary: "One line for the card."
+tags: ["til", "ai"]
+mood: "🧠"
+cover: "media/cover.webp"   # optional, file in public/blog/<slug>/
+draft: true                  # optional: only visible in npm run dev
+---
+```
+
+Extras: `> [!TIL]` / `[!NOTE]` / `[!TIP]` / `[!WARNING]` callouts, `![sticker](url)`, `$math$`, highlighted code,
+and a YouTube/Vimeo/Loom link on its own line becomes a player. See the draft post
+[`markdown-playground.md`](src/content/blog/markdown-playground.md) for everything.
+GIF search needs a free GIPHY key: `gh variable set GIPHY_KEY --body <key>` (or `VITE_GIPHY_KEY` in `.env.local`).
+
 ## Deploy
 
 Every push to `main` runs `.github/workflows/deploy.yml` → GitHub Pages.
@@ -35,10 +65,13 @@ Every push to `main` runs `.github/workflows/deploy.yml` → GitHub Pages.
 ```
 src/
   data/portfolio.ts          content
+  content/blog/*.md          blog posts
+  lib/blog/                  frontmatter, post index, GitHub publishing, studio media
   lib/sound.ts               Web Audio sound engine (hover/click/key/boot/success…)
   components/fx/             ambient effects + animation primitives
   components/portfolio/      page sections (Hero, About, Work, Journey, Stack, Terminal, Contact…)
-  pages/Index.tsx            page assembly + global UI sounds
+  pages/Index.tsx            page assembly
+  pages/Blog*.tsx            blog index, post page, writing studio
 ```
 
 ## Visitors & guestbook

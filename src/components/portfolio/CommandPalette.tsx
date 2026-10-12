@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { ArrowRight, Copy, ExternalLink, Github, Linkedin, Mail, Volume2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, BookOpen, Copy, ExternalLink, Github, Linkedin, Mail, PenLine, Volume2 } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -13,10 +14,12 @@ import {
 } from "@/components/ui/command";
 import { scrollToId } from "@/components/fx/primitives";
 import { featuredProjects, profile } from "@/data/portfolio";
+import { posts } from "@/lib/blog/posts";
 import { sound } from "@/lib/sound";
 import { SECTIONS } from "./Nav";
 
 export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (o: boolean) => void }) {
+  const navigate = useNavigate();
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
@@ -53,6 +56,18 @@ export function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (o: 
             <CommandItem key={p.id} onSelect={() => run(() => window.open(p.links.live ?? p.links.github, "_blank", "noopener"))}>
               <ExternalLink className="mr-2" /> {p.name}
               <CommandShortcut>{p.status}</CommandShortcut>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Blog">
+          <CommandItem onSelect={() => run(() => navigate("/blog"))}>
+            <BookOpen className="mr-2" /> Read the blog
+          </CommandItem>
+          {posts.slice(0, 5).map((p) => (
+            <CommandItem key={p.slug} value={`post ${p.title} ${p.tags.join(" ")}`} onSelect={() => run(() => navigate(`/blog/${p.slug}`))}>
+              <PenLine className="mr-2" /> {p.title}
+              <CommandShortcut>{p.date.slice(5)}</CommandShortcut>
             </CommandItem>
           ))}
         </CommandGroup>
